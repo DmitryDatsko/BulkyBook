@@ -19,5 +19,80 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             IEnumerable<CoverType> coverTypes = _unitOfWork.CoverType.GetAll();
             return View(coverTypes);
         }
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(CoverType obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _unitOfWork.CoverType.Add(obj);
+                _unitOfWork.Save();
+                TempData["success"] = "Cover Type created successfully";
+                return RedirectToAction("Index");
+            }
+            return View(obj);
+        }
+        public IActionResult Edit(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            //var categoryFromDb = _db.Categories.Find(id);
+            var covertypeFromDbFirst = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
+            //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
+            if (covertypeFromDbFirst == null)
+            {
+                return NotFound();
+            }
+            return View(covertypeFromDbFirst);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(CoverType obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _unitOfWork.CoverType.Update(obj);
+                _unitOfWork.Save();
+                TempData["success"] = "Cover Type updated successfully";
+                return RedirectToAction("Index");
+            }
+            return View(obj);
+        }
+
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            //var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDbFirst = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
+            //var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
+            if (categoryFromDbFirst == null)
+            {
+                return NotFound();
+            }
+            return View(categoryFromDbFirst);
+        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePOST(int? id)
+        {
+            var obj = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            _unitOfWork.CoverType.Remove(obj);
+            _unitOfWork.Save();
+            TempData["success"] = "Cover Type deleted successfully";
+            return RedirectToAction("Index");
+        }
     }
 }
